@@ -1,6 +1,5 @@
 import logging
 import re
-from http.cookiejar import debug
 
 
 def logging_setup():
@@ -24,7 +23,7 @@ def logging_setup():
 
 def main():
     # regex to find valid multiplications
-    regex_part1 = r"mul\((\d{1,3}),(\d{1,3})\)"
+    regex_part1 = r"mul\((\d{1,3}),(\d{1,3})\)|(do\(\)|don't\(\))"
 
     # code here
     part1 = 0
@@ -36,12 +35,23 @@ def main():
         text = f.read()
         results = re.findall(regex_part1, text)
 
-        logger.debug(text)
+        is_active = True
 
         # process results
         for result in results:
-            no1, no2 = [int(no) for no in result]
-            part1 += no1 * no2
+            if result[2] == "do()":
+                is_active = True
+                continue
+            elif result[2] == "don't()":
+                is_active = False
+                continue
+
+            mul_result = int(result[0]) * int(result[1])
+
+            if is_active:
+                part2 += mul_result
+
+            part1 += mul_result
 
         print(f"Part 1: {part1}; Part2: {part2}")
 
