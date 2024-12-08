@@ -20,8 +20,16 @@ def logging_setup():
 
     return logger
 
-
 def main():
+    """
+        Day 3 of advent of code 2024: Mull it Over
+
+        More info on the puzzle here: https://adventofcode.com/2024/day/3
+
+        Some optimisations with some inspiration from mebeim too:
+            https://github.com/mebeim/aoc/tree/master/2024#day-1---historian-hysteria
+    """
+
     # regex to find valid multiplications
     regex_part1 = r"mul\((\d{1,3}),(\d{1,3})\)|(do\(\)|don't\(\))"
 
@@ -33,25 +41,24 @@ def main():
 
     with open("inputs/day3.txt", 'r') as f:
         text = f.read()
-        results = re.findall(regex_part1, text)
+        # results =
 
+        # multiplication is switched on by default
         is_active = True
 
         # process results
-        for result in results:
-            if result[2] == "do()":
-                is_active = True
-                continue
-            elif result[2] == "don't()":
-                is_active = False
-                continue
+        for no1, no2, do_dont in re.findall(regex_part1, text):
+            if do_dont:
+                is_active = False if do_dont=="don't()" else True
+            else:
+                # get the result
+                mul_result = int(no1) * int(no2)
 
-            mul_result = int(result[0]) * int(result[1])
+                if is_active:
+                    # only record the second result if multiplication enabled
+                    part2 += mul_result
 
-            if is_active:
-                part2 += mul_result
-
-            part1 += mul_result
+                part1 += mul_result
 
         print(f"Part 1: {part1}; Part2: {part2}")
 
