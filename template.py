@@ -20,6 +20,13 @@ def logging_setup():
 
 
 def main():
+    """
+        Day [x] of advent of code 2024: [title]
+
+        More info on the puzzle here: https://adventofcode.com/2024/day/[x]
+
+    """
+
     # code here
     part1 = 0
     part2 = 0
