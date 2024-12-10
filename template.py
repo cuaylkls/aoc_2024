@@ -26,8 +26,6 @@ def main():
         More info on the puzzle here: https://adventofcode.com/2024/day/[x]
 
     """
-
-    # code here
     part1 = 0
     part2 = 0
 
