@@ -1,13 +1,13 @@
 import logging
 
-def logging_setup():
+def logging_setup(level=logging.DEBUG):
     # Create and configure the logger
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(level)
 
     # Add a console handler
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
+    console_handler.setLevel(level)
 
     # Create a formatter and set it for the handler
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')

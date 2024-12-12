@@ -1,15 +1,14 @@
 import logging
-from http.cookiejar import debug
 
 
-def logging_setup():
+def logging_setup(level=logging.DEBUG):
     # Create and configure the logger
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(level)
 
     # Add a console handler
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
+    console_handler.setLevel(level)
 
     # Create a formatter and set it for the handler
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -21,11 +20,15 @@ def logging_setup():
     return logger
 
 
+def return_middle_value(list):
+    return list[len(list) // 2]
+
+
 def main():
     """
-        Day [x] of advent of code 2024: [title]
+        Day 5 of advent of code 2024: Print Queue
 
-        More info on the puzzle here: https://adventofcode.com/2024/day/[x]
+        More info on the puzzle here: https://adventofcode.com/2024/day/5
 
     """
     part1 = 0
@@ -57,17 +60,19 @@ def main():
 
                 updates.append([int(update) for update in updates_str])
 
-    #rules.sort()
-
     logger.debug(rules)
     logger.debug(updates)
 
     for update in updates:
+        original_update = update.copy()
+
         valid = True
 
-        for x in range(len(update)):
+        x = 0
+        while x < len(update):
             # get the ruleset for this number
             if not update[x] in rules:
+                x += 1
                 continue
 
             rule_set = rules[update[x]]
@@ -80,16 +85,32 @@ def main():
                 # it is not valid
                 if rule in preceding_updates:
                     valid = False
-                    logger.debug(f"Update not valid: {update}")
-                    break
+                    logger.debug(f"Update not valid: {update}; {update[x]}|{rule}")
 
-            if not valid:
-                break
+                    # find where in the list the rule is
+                    y = 0
+                    while y < len(preceding_updates):
+                        if preceding_updates[y] == rule:
+                            break
+
+                        y += 1
+
+                    # create a new list and move the pointer back to the position other number moved to
+                    update = preceding_updates[:y] + [update[x], rule] +  preceding_updates[y+1:] + update[x+1:]
+                    x = y
+
+                    break
+            else:
+                x += 1
         else:
             logger.debug(f"Update valid: {update}")
 
             # add the middle number in the valid update to part1
-            part1 += update[int(len(update)/2)]
+            if valid: # this is a part 1 list
+                part1 += return_middle_value(original_update)
+            else:
+                # part two list, so use the new onw
+                part2 += return_middle_value(update)
 
     print(f"part 1: {part1}, part 2: {part2}")
 
