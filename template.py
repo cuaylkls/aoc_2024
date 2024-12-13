@@ -26,12 +26,15 @@ def main():
         More info on the puzzle here: https://adventofcode.com/2024/day/[x]
 
     """
+    day = 0 # enter day here
+    use_sample = True
+
     part1 = 0
     part2 = 0
 
     logger = logging_setup()
 
-    with open("inputs/path_to_input.txt", 'r') as f:
+    with open(f"inputs/day{day}{'-sample' if use_sample else ''}.txt", 'r') as f:
         pass
 
     print(f"part 1: {part1}, part 2: {part2}")
