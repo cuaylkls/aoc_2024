@@ -1,22 +1,40 @@
 import logging
+from threading import Lock
 
-def logging_setup(level=logging.DEBUG):
-    # Create and configure the logger
-    logger = logging.getLogger()
-    logger.setLevel(level)
 
-    # Add a console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(level)
+class SingleLogging:
+    logger = None
+    _lock = Lock()
 
-    # Create a formatter and set it for the handler
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    console_handler.setFormatter(formatter)
+    @classmethod
+    def logging_setup(cls, level=logging.DEBUG):
+        if cls.logger is not None:
+            return cls.logger
 
-    # Add the handler to the logger
-    logger.addHandler(console_handler)
+        with cls._lock:
+            if cls.logger is not None:  # Double-check inside the lock
+                return cls.logger
 
-    return logger
+            # Create and configure the logger
+            logger = logging.getLogger('SingleLogging_logger')  # Use a specific name
+            logger.setLevel(level)
+
+            # Check if handlers already exist
+            if not logger.handlers:
+                # Add a console handler
+                console_handler = logging.StreamHandler()
+                console_handler.setLevel(level)
+
+                # Create a formatter and set it for the handler
+                formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+                console_handler.setFormatter(formatter)
+
+                # Add the handler to the logger
+                logger.addHandler(console_handler)
+
+            cls.logger = logger
+
+        return logger
 
 
 def main():
@@ -32,7 +50,7 @@ def main():
     part1 = 0
     part2 = 0
 
-    logger = logging_setup()
+    logger = SingleLogging.logging_setup()
 
     with open(f"inputs/day{day}{'-sample' if use_sample else ''}.txt", 'r') as f:
         pass
