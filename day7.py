@@ -1,5 +1,6 @@
 import itertools
 import logging
+import time
 from threading import Lock
 
 
@@ -51,11 +52,18 @@ def test_result(target, numbers, combinations):
                 result += numbers[x + 1]
             elif operator == "*":
                 result *= numbers[x + 1]
+            elif operator == "|":
+                result = int(str(result) + str(numbers[x+1]))
+
+            if result > target:
+                # stop checking if result is bigger than target
+                break
 
         if result == target:
             return result
 
     return 0
+
 
 def main():
     """
@@ -64,6 +72,10 @@ def main():
         More info on the puzzle here: https://adventofcode.com/2024/day/[x]
 
     """
+
+    # Record the start time
+    start_time = time.time()
+
     day = 7 # enter day here
     use_sample = False
 
@@ -73,6 +85,8 @@ def main():
     logger = SingleLogging.logging_setup()
 
     with open(f"inputs/day{day}{'-sample' if use_sample else ''}.txt", 'r') as f:
+        logger.info("Start")
+
         for line in f:
             pos = line.find(":") # find the colon
             target = int(line[0:pos]) # get the target value
@@ -81,17 +95,34 @@ def main():
             numbers = [int(number) for number in line[pos+1:].strip().split()]
 
             # generate all possible combinations
-            combinations = get_combinations(len(numbers) - 1, "*+")
+            combinations1 = get_combinations(len(numbers) - 1, "*+")
+            combinations2 = get_combinations(len(numbers) - 1, "*+|")
 
-            logger.debug(f"{target}: {numbers}; trying {2 ** (len(numbers) - 1)} combinations")
+            # logger.debug(f"{target}: {numbers}; trying {2 ** (len(numbers) - 1)} and {3 ** (len(numbers) - 1)} combinations")
 
-            result = test_result(target, numbers, combinations)
-            part1 += result
+            result1 = test_result(target, numbers, combinations1)
 
-            logger.debug(f"result {result}")
+            if result1 == 0:
+                result2 = test_result(target, numbers, combinations2)
+            else:
+                result2 = result1
+
+            part1 += result1
+            part2+= result2
+
+            # logger.debug(f"result {result1}, {result2}")
 
 
     print(f"part 1: {part1}, part 2: {part2}")
+
+    # Record the end time
+    end_time = time.time()
+    # Calculate elapsed time
+    elapsed_time = end_time - start_time
+
+    # Output the time taken
+    logger.info(f"Time taken: {elapsed_time:.2f} seconds")
+
 
 if __name__ == '__main__':
     main()
